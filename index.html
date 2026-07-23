@@ -1,0 +1,1266 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="description" content="現場の経験を、伝わるプレゼンへ。口福Labo プレゼン・コンテンツ生成システム" />
+  <title>口福Labo｜プレゼン・コンテンツ生成システム</title>
+  <style>
+    :root{
+      --ink:#25332f;
+      --muted:#66746f;
+      --paper:#fffdf8;
+      --cream:#f6f1e5;
+      --green:#315d50;
+      --green2:#dbe9e1;
+      --gold:#c08b3c;
+      --gold2:#f4e5c8;
+      --line:#d8ddd8;
+      --danger:#a4493d;
+      --white:#fff;
+      --shadow:0 12px 34px rgba(44,67,59,.10);
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      color:var(--ink);
+      background:
+        radial-gradient(circle at 10% 0%,rgba(244,229,200,.7),transparent 30%),
+        linear-gradient(180deg,#fbfaf6 0%,#f4f1e9 100%);
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Hiragino Sans","Yu Gothic UI","Yu Gothic",Meiryo,sans-serif;
+      line-height:1.65;
+    }
+    button,input,textarea,select{font:inherit}
+    button{cursor:pointer}
+    .shell{max-width:1160px;margin:0 auto;padding:24px}
+    .topbar{
+      display:flex;align-items:center;justify-content:space-between;gap:16px;
+      padding:12px 0 22px;
+    }
+    .brand{display:flex;align-items:center;gap:12px}
+    .mark{
+      width:48px;height:48px;border-radius:50%;
+      display:grid;place-items:center;
+      border:2px solid var(--green);color:var(--green);
+      background:rgba(255,255,255,.7);font-size:22px;font-weight:800;
+    }
+    .brand strong{display:block;font-size:18px}
+    .brand small{display:block;color:var(--muted)}
+    .status{
+      padding:7px 11px;border-radius:999px;background:var(--green2);
+      color:var(--green);font-size:13px;font-weight:700;
+    }
+    .hero{
+      display:grid;grid-template-columns:1.2fr .8fr;gap:22px;
+      background:rgba(255,255,255,.86);border:1px solid rgba(216,221,216,.85);
+      border-radius:28px;padding:34px;box-shadow:var(--shadow);
+    }
+    .eyebrow{font-size:13px;letter-spacing:.08em;color:var(--green);font-weight:800}
+    h1{font-size:clamp(30px,5vw,52px);line-height:1.15;margin:8px 0 16px}
+    .lead{font-size:18px;color:#4d5c57;max-width:720px}
+    .hero-note{
+      background:var(--cream);border-radius:20px;padding:22px;
+      border:1px solid #e8dfcc;align-self:stretch;
+    }
+    .hero-note h2{font-size:18px;margin:0 0 10px}
+    .hero-note p{margin:8px 0;color:#59645f}
+    .safe{
+      border-left:4px solid var(--gold);padding:10px 12px;background:#fffaf0;border-radius:8px;
+      font-size:14px;margin-top:14px;
+    }
+    .mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:24px 0}
+    .mode-card{
+      border:2px solid transparent;background:rgba(255,255,255,.85);
+      border-radius:var(--radius);padding:22px;text-align:left;box-shadow:0 6px 20px rgba(44,67,59,.06);
+      transition:.18s ease;
+    }
+    .mode-card:hover{transform:translateY(-2px)}
+    .mode-card.active{border-color:var(--green);background:#fff}
+    .mode-card h3{margin:4px 0 6px;font-size:20px}
+    .mode-card p{margin:0;color:var(--muted)}
+    .mode-label{font-size:12px;font-weight:800;color:var(--green);letter-spacing:.08em}
+    .app-grid{display:grid;grid-template-columns:minmax(0,1fr) 350px;gap:20px;align-items:start}
+    .panel{
+      background:rgba(255,255,255,.9);border:1px solid var(--line);
+      border-radius:var(--radius);padding:26px;box-shadow:var(--shadow);
+    }
+    .sticky{position:sticky;top:16px}
+    .panel h2{margin:0 0 6px;font-size:24px}
+    .sub{margin:0 0 22px;color:var(--muted)}
+    .progress-wrap{margin:18px 0 24px}
+    .progress-label{display:flex;justify-content:space-between;font-size:13px;color:var(--muted)}
+    .progress{height:8px;background:#edf0ed;border-radius:999px;overflow:hidden;margin-top:7px}
+    .progress > span{display:block;height:100%;background:var(--green);width:20%;transition:.25s}
+    .step{display:none}
+    .step.active{display:block}
+    .step h3{font-size:21px;margin:0 0 8px}
+    .step-help{color:var(--muted);margin:0 0 18px}
+    .field{margin:16px 0}
+    label{display:block;font-weight:750;margin-bottom:7px}
+    .hint{display:block;color:var(--muted);font-size:13px;margin-top:5px}
+    input[type="text"],input[type="number"],textarea,select{
+      width:100%;border:1px solid #cfd6d1;border-radius:12px;background:#fff;
+      padding:13px 14px;color:var(--ink);outline:none;
+    }
+    textarea{min-height:116px;resize:vertical}
+    input:focus,textarea:focus,select:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(49,93,80,.12)}
+    .choice-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+    .choice{
+      position:relative;border:1px solid #d3dad5;border-radius:12px;padding:12px;background:#fff;
+    }
+    .choice input{position:absolute;opacity:0;pointer-events:none}
+    .choice:has(input:checked){border-color:var(--green);background:var(--green2)}
+    .choice strong{display:block}
+    .choice small{color:var(--muted)}
+    .nav{
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+      margin-top:24px;padding-top:18px;border-top:1px solid #ebeeeb;
+    }
+    .btn{
+      border:0;border-radius:12px;padding:12px 18px;font-weight:800;
+      display:inline-flex;align-items:center;justify-content:center;gap:7px;
+    }
+    .btn.primary{background:var(--green);color:#fff}
+    .btn.secondary{background:#edf1ee;color:var(--green)}
+    .btn.outline{background:#fff;color:var(--green);border:1px solid var(--green)}
+    .btn.warn{background:#fff5f1;color:var(--danger);border:1px solid #edcbc3}
+    .btn:disabled{opacity:.45;cursor:not-allowed}
+    .tip{
+      border:1px solid #e4d4b6;background:#fff9ec;border-radius:14px;padding:15px;margin:14px 0;
+    }
+    .tip strong{color:#77541f}
+    .side-list{padding:0;margin:14px 0 0;list-style:none}
+    .side-list li{
+      display:flex;gap:10px;padding:11px 0;border-bottom:1px solid #edf0ed;font-size:14px;
+    }
+    .num{
+      flex:0 0 27px;width:27px;height:27px;border-radius:50%;
+      display:grid;place-items:center;background:var(--green2);color:var(--green);font-weight:800;
+    }
+    .privacy{
+      margin-top:18px;padding:13px;border-radius:12px;background:#f7f8f7;color:#59645f;font-size:13px;
+    }
+    .advanced-only{display:none}
+    body.advanced .advanced-only{display:block}
+    body.advanced .light-only{display:none}
+    .result{display:none;margin-top:22px}
+    .result.show{display:block}
+    .result-head{
+      display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:16px
+    }
+    .tabs{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 18px}
+    .tab{
+      border:1px solid #d2d9d4;background:#fff;color:var(--ink);
+      border-radius:999px;padding:8px 13px;font-weight:750;
+    }
+    .tab.active{background:var(--green);color:#fff;border-color:var(--green)}
+    .tab-panel{display:none}
+    .tab-panel.active{display:block}
+    .output-box{
+      background:#fbfcfb;border:1px solid #dce2de;border-radius:14px;padding:18px;
+      white-space:pre-wrap;overflow-wrap:anywhere;
+    }
+    .slide-list{display:grid;gap:12px}
+    .slide-card{
+      border:1px solid #dce2de;border-radius:14px;padding:16px;background:#fff;
+      display:grid;grid-template-columns:54px 1fr;gap:14px;
+    }
+    .slide-no{
+      width:44px;height:44px;border-radius:12px;background:var(--green2);color:var(--green);
+      display:grid;place-items:center;font-weight:900;
+    }
+    .slide-card h4{margin:0 0 5px}
+    .slide-card p{margin:4px 0;color:#56635e}
+    .caption-preview{
+      margin:9px 0;padding:10px 12px;border-radius:10px;
+      background:#f4f7f5;font-weight:750;color:#344b43;
+    }
+    .output-badge{
+      display:inline-flex;align-items:center;gap:6px;
+      padding:6px 10px;border-radius:999px;background:var(--gold2);
+      color:#77541f;font-size:13px;font-weight:800;margin-bottom:10px;
+    }
+    .speaker-note{
+      margin-top:9px;padding:9px 11px;border-left:3px solid var(--gold);
+      background:#fffaf1;font-size:14px;
+    }
+    .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:15px}
+    .checklist{display:grid;gap:9px}
+    .check-item{display:flex;gap:10px;align-items:flex-start;padding:12px;border:1px solid #e2e6e3;border-radius:12px}
+    .check-item input{margin-top:5px}
+    .footer{padding:32px 0 12px;text-align:center;color:var(--muted);font-size:13px}
+    .toast{
+      position:fixed;right:22px;bottom:22px;background:#233b33;color:#fff;
+      padding:12px 16px;border-radius:12px;box-shadow:var(--shadow);
+      opacity:0;transform:translateY(8px);pointer-events:none;transition:.2s;z-index:20;
+    }
+    .toast.show{opacity:1;transform:none}
+    .hidden{display:none!important}
+    @media(max-width:860px){
+      .hero{grid-template-columns:1fr;padding:24px}
+      .app-grid{grid-template-columns:1fr}
+      .sticky{position:static}
+    }
+    @media(max-width:620px){
+      .shell{padding:14px 14px 94px}
+      .mode-grid,.choice-grid{grid-template-columns:1fr}
+      .panel{padding:20px}
+      .topbar{align-items:flex-start}
+      .status{display:none}
+      .slide-card{grid-template-columns:42px 1fr}
+      .result-head{display:block}
+      .nav{
+        position:fixed;
+        left:0;
+        right:0;
+        bottom:0;
+        z-index:50;
+        margin:0;
+        padding:12px max(14px,env(safe-area-inset-right))
+          calc(12px + env(safe-area-inset-bottom))
+          max(14px,env(safe-area-inset-left));
+        background:rgba(255,255,255,.97);
+        border-top:1px solid var(--line);
+        box-shadow:0 -8px 24px rgba(44,67,59,.12);
+      }
+      .nav .btn{min-height:48px;touch-action:manipulation}
+      .nav .btn.primary{flex:1}
+      .toast{
+        left:14px;
+        right:14px;
+        bottom:88px;
+        text-align:center;
+      }
+    }
+    @media print{
+      body{background:#fff}
+      .topbar,.hero,.mode-grid,.sticky,.nav,.actions,.tabs,.footer,.toast{display:none!important}
+      .app-grid{display:block}
+      .panel{box-shadow:none;border:0;padding:0}
+      .result{display:block!important}
+      .tab-panel{display:block!important;margin-bottom:24px}
+      .step{display:none!important}
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="mark">口</div>
+        <div><strong>口福Labo</strong><small>Presentation Content Guide</small></div>
+      </div>
+      <div class="status">AI APIを使わない試作版</div>
+    </header>
+
+    <section class="hero">
+      <div>
+        <div class="eyebrow">現場の経験を、伝わるプレゼンへ</div>
+        <h1>話したいことはある。<br>あとは、伝わる形にするだけ。</h1>
+        <p class="lead">
+          質問に答えると、講演の流れ、スライド案、話すメモ、
+          生成AIへ渡す指示文がまとまります。ライトモードでは、
+          PowerPointがなくても使える紙芝居型スライドを作れます。
+        </p>
+      </div>
+      <aside class="hero-note">
+        <h2>この試作版の仕組み</h2>
+        <p>口福Labo内では外部AIを動かしません。入力内容から、利用者自身のChatGPT・Gemini・NotebookLM等へ渡せる指示文を作ります。</p>
+        <div class="safe"><strong>重要：</strong>患者名、顔写真、住所、生年月日など、個人を特定できる情報は入力しないでください。</div>
+      </aside>
+    </section>
+
+    <section class="mode-grid" aria-label="モード選択">
+      <button class="mode-card active" id="modeLight" type="button">
+        <div class="mode-label">LIGHT MODE</div>
+        <h3>案内に沿って作る</h3>
+        <p>AIもプレゼン作成も初めての方向け。絵と短い言葉で、そのまま話せる紙芝居型資料を作ります。</p>
+      </button>
+      <button class="mode-card" id="modeAdvanced" type="button">
+        <div class="mode-label">ADVANCED MODE</div>
+        <h3>詳しく設計する</h3>
+        <p>対象、根拠資料、枚数、出力形式まで指定して、編集可能な研修・講演資料を設計します。</p>
+      </button>
+    </section>
+
+    <main class="app-grid">
+      <section class="panel">
+        <div id="builder">
+          <h2 id="modeTitle">ライトモード</h2>
+          <p class="sub" id="modeDesc">文章が整っていなくても大丈夫です。普段の言葉で入力してください。</p>
+
+          <div class="progress-wrap">
+            <div class="progress-label"><span id="stepText">ステップ 1 / 5</span><span id="stepName">話したいこと</span></div>
+            <div class="progress"><span id="progressBar"></span></div>
+          </div>
+
+          <form id="presentationForm">
+            <section class="step active" data-step="1">
+              <h3>何について話しますか？</h3>
+              <p class="step-help">テーマ名が決まっていなくても、困りごとや伝えたい経験を書けば大丈夫です。</p>
+              <div class="field">
+                <label for="theme">話したいテーマ</label>
+                <textarea id="theme" placeholder="例：食事中にむせる高齢者への対応。姿勢を整えるだけで変わることを介護職に伝えたい。"></textarea>
+                <span class="hint">うまい文章にしようとせず、思いつくまま書いてください。</span>
+              </div>
+              <div class="tip"><strong>AIの使い方 1：</strong>最初から完璧な指示を書く必要はありません。背景や困りごとを含めて伝えると、AIは整理しやすくなります。</div>
+            </section>
+
+            <section class="step" data-step="2">
+              <h3>誰に、どこで話しますか？</h3>
+              <p class="step-help">相手によって、言葉の難しさと説明の順序を変えます。</p>
+              <div class="field">
+                <label for="audience">主な聞き手</label>
+                <input id="audience" type="text" placeholder="例：デイサービスの介護職、地域の管理栄養士、一般高齢者" />
+              </div>
+              <div class="field">
+                <label for="setting">実施する場面</label>
+                <select id="setting">
+                  <option value="施設内研修">施設内研修</option>
+                  <option value="地域の勉強会">地域の勉強会</option>
+                  <option value="一般向け講座">一般向け講座</option>
+                  <option value="活動紹介">活動紹介</option>
+                  <option value="導入提案">導入提案</option>
+                  <option value="学会・研究発表">学会・研究発表</option>
+                  <option value="その他">その他</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="duration">発表時間</label>
+                <select id="duration">
+                  <option value="10">10分</option>
+                  <option value="20" selected>20分</option>
+                  <option value="30">30分</option>
+                  <option value="45">45分</option>
+                  <option value="60">60分</option>
+                  <option value="90">90分</option>
+                </select>
+              </div>
+            </section>
+
+            <section class="step" data-step="3">
+              <h3>一番伝えたいことは何ですか？</h3>
+              <p class="step-help">聞き手が一つだけ覚えて帰るとしたら、何を残したいかを考えます。</p>
+              <div class="field">
+                <label for="message">中心メッセージ</label>
+                <textarea id="message" placeholder="例：むせたらすぐ食事中止と考えるのではなく、まず姿勢・一口量・食べる速さを観察してほしい。"></textarea>
+              </div>
+              <div class="field">
+                <label for="outcome">聞いた人に、どうなってほしいですか？</label>
+                <select id="outcome">
+                  <option value="基本を理解してほしい">基本を理解してほしい</option>
+                  <option value="現場で観察してほしい">現場で観察してほしい</option>
+                  <option value="明日から実践してほしい">明日から実践してほしい</option>
+                  <option value="チームで共有してほしい">チームで共有してほしい</option>
+                  <option value="専門職へ相談してほしい">専門職へ相談してほしい</option>
+                  <option value="活動に参加してほしい">活動に参加してほしい</option>
+                </select>
+              </div>
+              <div class="tip"><strong>プレゼンの整理：</strong>「自分が話したいこと」より「聞き手に何が残れば役立つか」を先に置くと、情報を減らしやすくなります。</div>
+            </section>
+
+            <section class="step" data-step="4">
+              <h3>現場の具体例を教えてください</h3>
+              <p class="step-help">成功例だけでなく、迷ったことやうまくいかなかった経験も教材になります。</p>
+              <div class="field">
+                <label for="experience">事例・経験・普段の工夫</label>
+                <textarea id="experience" placeholder="例：足が浮き、顎が上がった姿勢で食べていた方に足台を入れたところ、むせが減り食事時間も短くなった。"></textarea>
+                <span class="hint">個人が特定されないよう、年齢や施設名などは必要最小限にしてください。</span>
+              </div>
+
+              <div class="advanced-only">
+                <div class="field">
+                  <label for="evidence">使いたい根拠資料・ガイドライン</label>
+                  <textarea id="evidence" placeholder="例：厚生労働省資料、日本摂食嚥下リハビリテーション学会の分類、手元の院内資料"></textarea>
+                </div>
+                <div class="field">
+                  <label for="mustInclude">必ず入れたい内容</label>
+                  <textarea id="mustInclude" placeholder="例：症例写真は後で自分で挿入する。最後に相談窓口を示す。"></textarea>
+                </div>
+              </div>
+            </section>
+
+            <section class="step" data-step="5">
+              <h3>仕上がりを選びます</h3>
+              <p class="step-help">まずは見やすく、話しやすい構成を優先します。</p>
+
+              <div class="field">
+                <label>話の型</label>
+                <div class="choice-grid">
+                  <label class="choice">
+                    <input type="radio" name="storyType" value="beginner" checked>
+                    <strong>初心者へ教える</strong><small>基本→事例→行動</small>
+                  </label>
+                  <label class="choice">
+                    <input type="radio" name="storyType" value="practice">
+                    <strong>実践を共有する</strong><small>困りごと→工夫→学び</small>
+                  </label>
+                  <label class="choice">
+                    <input type="radio" name="storyType" value="proposal">
+                    <strong>導入を提案する</strong><small>課題→仕組み→始め方</small>
+                  </label>
+                  <label class="choice">
+                    <input type="radio" name="storyType" value="activity">
+                    <strong>活動を紹介する</strong><small>背景→活動→参加</small>
+                  </label>
+                </div>
+              </div>
+
+
+              <div class="light-only">
+                <div class="field">
+                  <label>今回は、どの形まで作りますか？</label>
+                  <div class="choice-grid">
+                    <label class="choice">
+                      <input type="radio" name="lightOutput" value="kamishibai" checked>
+                      <strong>紙芝居型スライド</strong>
+                      <small>おすすめ／絵＋短い言葉でそのまま話せる</small>
+                    </label>
+                    <label class="choice">
+                      <input type="radio" name="lightOutput" value="outline">
+                      <strong>構成と話すメモ</strong>
+                      <small>自分で資料を作るための台本</small>
+                    </label>
+                    <label class="choice">
+                      <input type="radio" name="lightOutput" value="editable">
+                      <strong>編集できるスライド</strong>
+                      <small>PowerPointやGoogleスライド用</small>
+                    </label>
+                    <label class="choice">
+                      <input type="radio" name="lightOutput" value="browser">
+                      <strong>ブラウザで見せる資料</strong>
+                      <small>PowerPoint不要の単一HTML</small>
+                    </label>
+                  </div>
+                </div>
+                <div class="tip">
+                  <strong>紙芝居型とは：</strong>
+                  1枚につき「大きな絵・短いタイトル・1〜2文のキャプション」だけを置きます。
+                  スマートフォンやパソコンで画像を順に見せながら話せます。
+                </div>
+              </div>
+
+              <div class="advanced-only">
+                <div class="field">
+                  <label>最終成果物</label>
+                  <div class="choice-grid">
+                    <label class="choice">
+                      <input type="radio" name="advancedOutput" value="editable" checked>
+                      <strong>編集可能なスライド</strong>
+                      <small>PowerPointまたはGoogleスライド</small>
+                    </label>
+                    <label class="choice">
+                      <input type="radio" name="advancedOutput" value="notebook">
+                      <strong>NotebookLM用指示書</strong>
+                      <small>ソースを使ってスライドを作る</small>
+                    </label>
+                    <label class="choice">
+                      <input type="radio" name="advancedOutput" value="browser">
+                      <strong>ブラウザ用スライド</strong>
+                      <small>単一のindex.htmlとして作る</small>
+                    </label>
+                    <label class="choice">
+                      <input type="radio" name="advancedOutput" value="outline">
+                      <strong>構成・原稿のみ</strong>
+                      <small>制作前に内容を確認する</small>
+                    </label>
+                  </div>
+                </div>
+                <div class="field">
+                  <label for="slideCount">希望スライド枚数</label>
+                  <input id="slideCount" type="number" min="5" max="80" placeholder="空欄なら発表時間から自動提案" />
+                </div>
+                <div class="field">
+                  <label for="expertise">専門性の深さ</label>
+                  <select id="expertise">
+                    <option value="専門用語を避けた入門レベル">専門用語を避けた入門レベル</option>
+                    <option value="現場専門職向けの標準レベル" selected>現場専門職向けの標準レベル</option>
+                    <option value="根拠と引用を重視した専門レベル">根拠と引用を重視した専門レベル</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="design">デザインの方向性</label>
+                  <select id="design">
+                    <option value="白基調・低彩度・大きな文字">白基調・低彩度・大きな文字</option>
+                    <option value="口福Laboらしい木目・カフェ風">口福Laboらしい木目・カフェ風</option>
+                    <option value="医療研修向けの端正なデザイン">医療研修向けの端正なデザイン</option>
+                    <option value="一般市民向けの親しみやすいデザイン">一般市民向けの親しみやすいデザイン</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label>追加で作りたいもの</label>
+                  <div class="choice-grid">
+                    <label class="choice"><input class="extra" type="checkbox" value="A4配布資料"><strong>A4配布資料</strong><small>要点を持ち帰る</small></label>
+                    <label class="choice"><input class="extra" type="checkbox" value="60〜90秒動画台本"><strong>短い動画台本</strong><small>SNS・予習用</small></label>
+                    <label class="choice"><input class="extra" type="checkbox" value="研修後アンケート"><strong>アンケート</strong><small>振り返りと改善</small></label>
+                    <label class="choice"><input class="extra" type="checkbox" value="告知文"><strong>告知文</strong><small>募集・紹介用</small></label>
+                  </div>
+                </div>
+              </div>
+
+              <div class="tip"><strong>AIの使い方 2：</strong>生成されたものは「完成品」ではなく「たたき台」です。違う部分は、最初から作り直さず「3枚目だけ短く」など具体的に直します。</div>
+            </section>
+
+            <div class="nav">
+              <button class="btn secondary" type="button" id="prevBtn">戻る</button>
+              <button class="btn primary" type="button" id="nextBtn" aria-disabled="false">次へ</button>
+              <button class="btn primary hidden" type="submit" id="generateBtn">プレゼン設計を作る</button>
+            </div>
+          </form>
+        </div>
+
+        <section class="result" id="result">
+          <div class="result-head">
+            <div>
+              <div class="eyebrow">GENERATED GUIDE</div>
+              <h2>プレゼン設計ができました</h2>
+              <p class="sub">内容を確認し、自分の言葉に直してから外部AIへ渡してください。</p>
+            </div>
+            <button class="btn secondary" type="button" id="editBtn">入力を修正する</button>
+          </div>
+
+          <div class="tabs" role="tablist">
+            <button class="tab active" data-tab="summary" type="button">設計概要</button>
+            <button class="tab" data-tab="slides" type="button">スライド案</button>
+            <button class="tab" data-tab="prompt" type="button" id="promptTabLabel">AI用プロンプト</button>
+            <button class="tab advanced-only" data-tab="notebook" type="button">NotebookLM用</button>
+            <button class="tab" data-tab="literacy" type="button">次の進め方</button>
+          </div>
+
+          <div class="tab-panel active" id="tab-summary">
+            <div class="output-badge" id="outputBadge">完成形</div>
+            <div class="output-box" id="summaryOutput"></div>
+          </div>
+
+          <div class="tab-panel" id="tab-slides">
+            <div class="slide-list" id="slidesOutput"></div>
+          </div>
+
+          <div class="tab-panel" id="tab-prompt">
+            <div class="output-box" id="promptOutput"></div>
+            <div class="actions">
+              <button class="btn primary copy-btn" data-copy="promptOutput" type="button">プロンプトをコピー</button>
+              <button class="btn outline" id="downloadPrompt" type="button">テキスト保存</button>
+            </div>
+          </div>
+
+          <div class="tab-panel advanced-only" id="tab-notebook">
+            <div class="output-box" id="notebookOutput"></div>
+            <div class="actions">
+              <button class="btn primary copy-btn" data-copy="notebookOutput" type="button">指示書をコピー</button>
+            </div>
+          </div>
+
+          <div class="tab-panel" id="tab-literacy">
+            <div class="output-box" id="usageGuide" style="margin-bottom:16px"></div>
+            <div class="checklist">
+              <label class="check-item"><input type="checkbox"><span><strong>個人情報を取り除いた</strong><br>患者名、顔写真、住所、生年月日、施設名との組み合わせなどを確認します。</span></label>
+              <label class="check-item"><input type="checkbox"><span><strong>自分のAIアカウントを使う</strong><br>ChatGPT、Gemini、NotebookLM等を利用者自身の無料・有料プランで使います。</span></label>
+              <label class="check-item"><input type="checkbox"><span><strong>内容の正しさを確認する</strong><br>AIはもっともらしい誤りを出すことがあります。数値、制度、引用、医学的内容は原資料で確認します。</span></label>
+              <label class="check-item"><input type="checkbox"><span><strong>一部ずつ直す</strong><br>「もっと簡単に」「文字を半分に」「5枚目だけ事例中心に」など、具体的に修正します。</span></label>
+              <label class="check-item"><input type="checkbox"><span><strong>自分の言葉に戻す</strong><br>立派すぎる文章をそのまま読まず、普段自分が使う言葉へ直します。</span></label>
+              <label class="check-item"><input type="checkbox"><span><strong>分かる名前で保存する</strong><br>例：20260723_食事姿勢研修_v01。元データとPDFを分けて保存します。</span></label>
+            </div>
+            <div class="actions">
+              <button class="btn outline" type="button" id="printBtn">設計書を印刷</button>
+              <button class="btn warn" type="button" id="resetBtn">入力を消去</button>
+            </div>
+          </div>
+        </section>
+      </section>
+
+      <aside class="panel sticky">
+        <h2>作りながら身につくこと</h2>
+        <p class="sub">資料完成と同時に、次回は少し自分でできる状態を目指します。</p>
+        <ol class="side-list">
+          <li><span class="num">1</span><span>話したいことを、整っていないまま入力する</span></li>
+          <li><span class="num">2</span><span>聞き手に残す一つのメッセージを選ぶ</span></li>
+          <li><span class="num">3</span><span>AIの提案をそのまま採用せず確認する</span></li>
+          <li><span class="num">4</span><span>追加指示で一部ずつ修正する</span></li>
+          <li><span class="num">5</span><span>ファイルを保存し、再利用できる形にする</span></li>
+        </ol>
+        <div class="privacy">
+          <strong>データについて</strong><br>
+          この試作版は、入力内容を外部AIへ自動送信しません。入力内容はこのブラウザ内に一時保存されます。共用端末では使用後に「入力を消去」してください。
+        </div>
+      </aside>
+    </main>
+
+    <footer class="footer">
+      口福Labo プレゼン・コンテンツ生成システム｜試作版 v2.1
+    </footer>
+  </div>
+
+  <div class="toast" id="toast">コピーしました</div>
+
+  <script>
+    (() => {
+      const $ = (s) => document.querySelector(s);
+      const $$ = (s) => [...document.querySelectorAll(s)];
+      const form = $('#presentationForm');
+      const steps = $$('.step');
+      const prevBtn = $('#prevBtn');
+      const nextBtn = $('#nextBtn');
+      const generateBtn = $('#generateBtn');
+      const modeLight = $('#modeLight');
+      const modeAdvanced = $('#modeAdvanced');
+      const result = $('#result');
+      const builder = $('#builder');
+      let currentStep = 1;
+      let mode = 'light';
+      const totalSteps = steps.length;
+
+      const stepNames = ['話したいこと','相手と時間','中心メッセージ','現場の経験','仕上がり'];
+      const fieldsToSave = ['theme','audience','setting','duration','message','outcome','experience','evidence','mustInclude','slideCount','expertise','design'];
+
+      function esc(text=''){
+        return String(text).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+      }
+
+      function setMode(nextMode){
+        mode = nextMode;
+        const advanced = mode === 'advanced';
+        document.body.classList.toggle('advanced', advanced);
+        modeLight.classList.toggle('active', !advanced);
+        modeAdvanced.classList.toggle('active', advanced);
+        $('#modeTitle').textContent = advanced ? 'アドバンスモード' : 'ライトモード';
+        $('#modeDesc').textContent = advanced
+          ? '対象、根拠、枚数、出力形式まで指定して、詳しい制作指示書を作ります。'
+          : '普段の言葉で答えると、PowerPoint不要の紙芝居型資料まで設計できます。';
+        safeStorageSet('koufuku_presentation_mode', mode);
+      }
+
+      modeLight.addEventListener('click', () => setMode('light'));
+      modeAdvanced.addEventListener('click', () => setMode('advanced'));
+
+      function showStep(n){
+        currentStep = Math.max(1, Math.min(totalSteps, n));
+        steps.forEach((el,i) => el.classList.toggle('active', i === currentStep-1));
+        $('#stepText').textContent = `ステップ ${currentStep} / ${totalSteps}`;
+        $('#stepName').textContent = stepNames[currentStep-1];
+        $('#progressBar').style.width = `${currentStep/totalSteps*100}%`;
+        prevBtn.disabled = currentStep === 1;
+        nextBtn.disabled = false;
+        nextBtn.setAttribute('aria-disabled','false');
+        nextBtn.classList.toggle('hidden', currentStep === totalSteps);
+        generateBtn.classList.toggle('hidden', currentStep !== totalSteps);
+        window.scrollTo({top: Math.max(0, builder.offsetTop-20), behavior:'smooth'});
+      }
+
+      function goNext(){
+        // スマホで内容を確認しながら進められるよう、
+        // 各ステップは未入力でも移動可能にする。
+        showStep(currentStep+1);
+      }
+
+      nextBtn.addEventListener('click', goNext);
+      nextBtn.style.webkitTapHighlightColor = 'transparent';
+      prevBtn.addEventListener('click', () => showStep(currentStep-1));
+
+      function recommendedCount(duration){
+        const d = Number(duration);
+        if(d <= 10) return 6;
+        if(d <= 20) return 8;
+        if(d <= 30) return 12;
+        if(d <= 45) return 16;
+        if(d <= 60) return 20;
+        return 30;
+      }
+
+      function getData(){
+        const extras = $$('.extra:checked').map(x=>x.value);
+        const storyType = $('input[name="storyType"]:checked')?.value || 'beginner';
+        const outputType = mode === 'advanced'
+          ? ($('input[name="advancedOutput"]:checked')?.value || 'editable')
+          : ($('input[name="lightOutput"]:checked')?.value || 'kamishibai');
+        const count = (mode === 'advanced' && Number($('#slideCount').value))
+          ? Number($('#slideCount').value)
+          : recommendedCount($('#duration').value);
+        return {
+          mode,
+          theme: $('#theme').value.trim(),
+          audience: $('#audience').value.trim(),
+          setting: $('#setting').value,
+          duration: $('#duration').value,
+          message: $('#message').value.trim(),
+          outcome: $('#outcome').value,
+          experience: $('#experience').value.trim(),
+          evidence: $('#evidence').value.trim(),
+          mustInclude: $('#mustInclude').value.trim(),
+          slideCount: count,
+          expertise: $('#expertise').value,
+          design: $('#design').value,
+          extras,
+          storyType,
+          outputType
+        };
+      }
+
+      const storyTemplates = {
+        beginner: [
+          ['タイトル','今日のテーマと、聞き手に持ち帰ってほしいことを示す'],
+          ['なぜ今この話か','現場で起きている困りごとを、身近な場面から示す'],
+          ['まず知っておきたいこと','必要最小限の基礎知識を一つずつ整理する'],
+          ['見るポイント','現場で観察するポイントを3項目以内で示す'],
+          ['よくある誤解','禁止や正解だけでなく、判断の背景を説明する'],
+          ['現場の事例','具体例から、変化と気づきを伝える'],
+          ['今日からできること','無理なく始められる行動を示す'],
+          ['共有と相談','一人で抱えず、記録・共有・相談につなげる'],
+          ['まとめ','中心メッセージを短い言葉で言い直す'],
+          ['問いかけ','聞き手が自分の現場へ置き換える問いを残す']
+        ],
+        practice: [
+          ['タイトル','実践のテーマと背景を示す'],
+          ['出発点','何に困り、何を変えたいと考えたか'],
+          ['現場の状況','対象者・環境・制約を簡潔に示す'],
+          ['最初の仮説','当初どのように考えたか'],
+          ['行った工夫','実際に変えたことを具体的に示す'],
+          ['観察した変化','数値だけでなく、生活上の変化も示す'],
+          ['うまくいかなかったこと','迷いや修正点を正直に共有する'],
+          ['そこから得た学び','他の現場にも持ち帰れる形に一般化する'],
+          ['次に試したいこと','残った課題と今後を示す'],
+          ['まとめ','一番伝えたい実践知を一文で示す']
+        ],
+        proposal: [
+          ['タイトル','提案する仕組みと対象を示す'],
+          ['現在の課題','現場の負担や見落としを具体的に示す'],
+          ['なぜ解決しにくいか','人・時間・情報共有の構造を整理する'],
+          ['提案の全体像','仕組みを一枚の図で示す'],
+          ['実際の流れ','誰が、いつ、何をするかを示す'],
+          ['導入による変化','利用者・職員・組織それぞれの利点を示す'],
+          ['必要な準備','費用・役割・時間を簡潔に示す'],
+          ['小さく始める方法','試行期間や最小単位を提案する'],
+          ['想定される不安','よくある懸念への答えを示す'],
+          ['次の一歩','具体的な相談・試行・連絡につなげる']
+        ],
+        activity: [
+          ['タイトル','活動名と一言の価値を示す'],
+          ['始めた理由','地域や現場で見えていた課題を示す'],
+          ['大切にしていること','活動の理念を生活場面の言葉で示す'],
+          ['主な活動','何を、誰と、どのように行っているか'],
+          ['実際の場面','写真や具体例で活動の雰囲気を伝える'],
+          ['生まれた変化','参加者や地域に起きた変化を示す'],
+          ['他職種との関係','一緒にできることを示す'],
+          ['参加方法','初めての人が関われる入口を示す'],
+          ['これから','今後育てたい活動を示す'],
+          ['まとめ','一緒に実現したい未来を一文で示す']
+        ]
+      };
+
+      function makeSlides(data){
+        const base = storyTemplates[data.storyType];
+        const target = Math.max(5, Math.min(80, data.slideCount));
+        const slides = [];
+        for(let i=0;i<target;i++){
+          const source = base[Math.floor(i * base.length / target)] || base[base.length-1];
+          let title = source[0];
+          let point = source[1];
+          if(i===0) title = makeTitle(data);
+          if(title === '現場の事例' || title === '実際の場面'){
+            point = data.experience || '個人が特定されない具体例を一つ示す';
+          }
+          if(i === target-1){
+            title = 'まとめ：今日持ち帰ってほしいこと';
+            point = data.message;
+          }
+          slides.push({
+            n:i+1,
+            title,
+            point,
+            caption: makeCaption(title, point, data, i, target),
+            visual: visualSuggestion(title),
+            note: speakerNote(title, point, data)
+          });
+        }
+        return slides;
+      }
+
+      function makeTitle(data){
+        const raw = data.theme.replace(/[。．\n].*$/,'').trim();
+        return raw.length > 34 ? raw.slice(0,34)+'…' : raw || '伝わるプレゼン';
+      }
+
+      function makeCaption(title, point, data, index, total){
+        if(index === 0) return data.message;
+        if(index === total - 1) return data.message;
+        const cleaned = String(point)
+          .replace(/を示す/g,'')
+          .replace(/してください/g,'します')
+          .replace(/する$/,'')
+          .trim();
+        return cleaned.length > 58 ? cleaned.slice(0,57) + '…' : cleaned;
+      }
+
+      function visualSuggestion(title){
+        if(/事例|場面|状況/.test(title)) return '人物や現場のイラスト、または匿名化した症例写真の挿入欄';
+        if(/流れ|全体像|共有|相談/.test(title)) return '矢印でつないだ3〜5段階のフロー図';
+        if(/ポイント|できること|準備/.test(title)) return '大きなアイコンを使った3項目の整理';
+        if(/変化|結果|学び/.test(title)) return 'Before／Afterまたは二列比較';
+        if(/まとめ|タイトル/.test(title)) return '短いメッセージを中央に大きく配置';
+        return '文章を増やさず、内容を象徴する一つの図またはイラスト';
+      }
+
+      function speakerNote(title, point, data){
+        if(/タイトル/.test(title) || title === makeTitle(data)){
+          return `最初に「今日は${data.theme}について、${data.audience}の皆さんと考えます」と伝えます。結論を先に出し、${data.message}を中心に話すことを示します。`;
+        }
+        if(/事例|場面/.test(title)){
+          return `事例を詳しく説明しすぎず、「何を観察し、何を変え、何が起きたか」の順で話します。個人を特定できる情報は出しません。`;
+        }
+        if(/まとめ/.test(title)){
+          return `新しい情報は加えず、「${data.message}」を、自分が普段使う言葉で言い直します。最後に、${data.outcome}と呼びかけます。`;
+        }
+        return `このスライドでは「${point}」だけを伝えます。表示文を読み上げず、現場の短い例を添えて説明します。`;
+      }
+
+      function outputTypeName(type){
+        return {
+          kamishibai:'紙芝居型スライド（画像＋短いキャプション）',
+          outline:'構成と話すメモ',
+          editable:'編集可能なスライド',
+          browser:'ブラウザで見せる単一HTML',
+          notebook:'NotebookLM用指示書'
+        }[type] || type;
+      }
+
+      function makeSummary(data){
+        const typeNames = {beginner:'初心者へ教える',practice:'実践を共有する',proposal:'導入を提案する',activity:'活動を紹介する'};
+        return `【完成形】
+${outputTypeName(data.outputType)}
+
+【講演タイトル案】
+${makeTitle(data)}
+
+【対象】
+${data.audience}
+
+【場面・時間】
+${data.setting}／${data.duration}分
+
+【講演の中心メッセージ】
+${data.message}
+
+【聞き手に期待する変化】
+${data.outcome}
+
+【話の型】
+${typeNames[data.storyType]}
+
+【推奨スライド数】
+${data.slideCount}枚
+
+【現場の経験】
+${data.experience || '未入力：後から匿名化した具体例を一つ追加する'}
+
+【制作方針】
+・1スライド1メッセージ
+・表示文は短く、詳しい説明は講師ノートへ入れる
+・話し手の思い入れだけで情報を増やさず、聞き手に必要な順序を優先する
+・結論、現場の事例、明日からの行動を必ず含める
+・患者や利用者を特定できる情報は使用しない`;
+      }
+
+      function makePrompt(data, slides){
+        const slideText = slides.map(s =>
+          `${s.n}. ${s.title}\n   キャプション：${s.caption}\n   絵・図：${s.visual}\n   話すメモ：${s.note}`
+        ).join('\n\n');
+
+        const common = `【テーマ】
+${data.theme}
+
+【対象】
+${data.audience}
+
+【実施場面・時間】
+${data.setting}／${data.duration}分
+
+【一番伝えたいこと】
+${data.message}
+
+【聞き手に期待する変化】
+${data.outcome}
+
+【現場の具体例】
+${data.experience || '具体例は未入力。架空の症例を作らず、必要な箇所は後から話し手が補える形にする。'}
+
+【枚数】
+${data.slideCount}枚
+
+【各枚の設計】
+${slideText}`;
+
+        if(data.outputType === 'kamishibai'){
+          return `あなたは、医療・介護・福祉の専門職が小規模な研修や地域講座で使う「紙芝居型スライド」を制作する編集者です。
+
+以下の内容から、${data.slideCount}枚の紙芝居型スライドを作成してください。
+
+【最終成果物】
+・横長16:9のスライド画像を${data.slideCount}枚
+・1枚ずつ独立した画像として作る
+・各画像は、そのまま全画面表示して話せる完成形にする
+・PowerPointを持っていない人でも使用できる形式にする
+
+【各画像に必ず入れるもの】
+1. 上部に短い日本語タイトル
+2. 中央に、内容を一目で理解できる大きなイラストまたは場面図
+3. 下部に1〜2文、最大2行の短い日本語キャプション
+4. スライド番号
+
+【重要】
+・イラストだけの画像集にしない
+・タイトルとキャプションのない絵だけを作らない
+・複数スライドを1枚にまとめたコラージュにしない
+・長い説明文や箇条書きを画像内に詰め込まない
+・画像内の日本語は、下記のタイトルとキャプションを変更せず正確に使用する
+・文字が崩れる場合は、無理に偽の日本語を描かず、画像と同じ番号のタイトル・キャプション一覧を別途テキストで出す
+・全スライドで、水彩調、低彩度、白い余白のある、親しみやすい統一デザインにする
+・同じ人物が続けて登場する場合は、年齢、髪形、服装をそろえる
+・恐怖を煽る表現ではなく、理解と次の行動につながる表現にする
+
+${common}
+
+【画像とは別に出すもの】
+画像生成後、1〜${data.slideCount}の番号を付けて、各スライドの「話すメモ」をテキストでまとめてください。
+
+まず全${data.slideCount}枚のタイトルとキャプションを一覧で確認し、その内容を変えずに、紙芝居型スライドを1枚ずつ作成してください。`;
+        }
+
+        if(data.outputType === 'browser'){
+          return `あなたは、医療・介護・福祉の専門職が講演に使うブラウザ用スライドを制作するWeb編集者です。
+
+以下の内容から、外部ライブラリ不要の単一ファイル「index.html」を作成してください。
+
+【最終成果物】
+・Chrome、Edge、Safari等で開ける単一のindex.html
+・PowerPointは使用しない
+・横長16:9のスライドを${data.slideCount}枚収録
+・左右キー、画面上のボタン、スワイプで前後移動できる
+・全画面表示に対応する
+・各スライドにタイトル、大きな図またはイラスト領域、短いキャプションを置く
+・講師用メモは画面上で表示／非表示を切り替えられる
+・印刷時は1ページ1スライドになる
+・画像が用意できない場合は、画像を捏造せず、内容が分かる挿入欄を置く
+
+${common}
+
+【デザイン】
+白基調、低彩度、大きな文字、十分な余白。1画面1メッセージとし、文章を詰め込まないでください。
+
+最終回答では説明だけで終わらず、使用できるindex.htmlファイルを作成してください。`;
+        }
+
+        if(data.outputType === 'outline'){
+          return `あなたは、医療・介護・福祉の専門職の講演を支援する編集者です。
+
+以下の内容から、スライド制作前に確認できる「講演構成と話すメモ」を作成してください。
+
+${common}
+
+【出力形式】
+各スライドについて、
+・スライド番号
+・タイトル
+・画面に表示する短い言葉
+・話す順序
+・聞き手への問いかけ
+・必要な図や写真
+を示してください。
+
+画像やスライドファイルはまだ作らず、話し手が内容を確認・修正できる原稿として出力してください。`;
+        }
+
+        if(data.outputType === 'notebook'){
+          return makeNotebook(data, slides);
+        }
+
+        return `あなたは、医療・介護・福祉の専門職が行う講演を支援するプレゼン編集者です。
+
+以下の内容から、編集可能なプレゼンテーションを作成してください。
+
+【最終成果物】
+・${data.slideCount}枚を含む一つの編集可能なスライド資料
+・PowerPoint（.pptx）またはGoogleスライドで編集できる形式
+・各スライドのタイトル、本文、図形、矢印は可能な限り編集可能にする
+・スライドごとの画像ファイルだけを出力しない
+・各スライドを一枚絵として固定しない
+・PowerPointファイルを直接作れない環境では、Googleスライドへ貼り付けられる完全な構成・本文・レイアウト指定を出す
+
+${common}
+
+【制作ルール】
+1. 1スライドにつき一つのメッセージ
+2. 本文は3〜5項目以内
+3. 詳しい説明は講師ノート
+4. 見出しだけの中抜きスライドは禁止
+5. 写真がない場所は挿入欄にする
+6. 不足する医学的事実、制度、統計、引用を推測しない
+7. AIらしい立派すぎる表現を避け、話し手の普段の言葉に近づける
+8. 最後は「${data.outcome}」につながる一歩を示す
+
+最初に全体構成を示し、その後、各スライドの
+「タイトル／表示本文／レイアウト／図解案／講師ノート」
+を作成し、可能なら一つの編集可能なプレゼンファイルとして出力してください。`;
+      }
+
+      function makeNotebook(data, slides){
+        const extras = data.extras.length ? data.extras.join('、') : 'なし';
+        return `【NotebookLM用 プレゼン作成指示書】
+
+1．目的
+${data.audience}を対象に、${data.theme}について${data.duration}分で説明し、
+「${data.message}」を持ち帰ってもらう。
+
+2．到達点
+${data.outcome}
+
+3．専門性
+${data.expertise}
+
+4．根拠として優先する資料
+${data.evidence || 'ソースとして登録された公的資料、ガイドライン、原著論文を優先する。根拠がない内容は補完しない。'}
+
+5．必ず入れる内容
+${data.mustInclude || '現場の具体例、観察の視点、明日からの行動、まとめ'}
+
+6．デザイン
+${data.design}
+・1スライド1メッセージ
+・本文は3〜5項目以内
+・見出しだけのスライドは禁止
+・低彩度で、余白を十分に取る
+・詳細説明は講師ノートへ入れる
+
+7．構成
+${slides.map(s=>`${s.n}. ${s.title}：${s.point}`).join('\n')}
+
+8．追加成果物
+${extras}
+
+9．禁止事項
+・ソースにない数値、制度、引用を作らない
+・個人を特定できる情報を補完しない
+・写真がない場所へ無関係な画像を入れない
+・文章を画面いっぱいに載せない
+・話し手の主張を過度に誇張しない
+
+10．短い実行指示
+この指示書を最優先で参照し、指定された対象、時間、構成、デザインルールに従ってプレゼンを作成してください。各スライドに、短い表示文、図解案、講師ノートを付けてください。`;
+      }
+
+      function makeUsageGuide(data){
+        if(data.outputType === 'kamishibai'){
+          return `【この後の使い方】
+1. 「紙芝居生成プロンプト」をコピーします。
+2. 自分のChatGPT、Geminiなど、新しい会話へ貼り付けます。
+3. 最初に表示されたタイトルとキャプション一覧を確認します。
+4. 問題なければ「この内容で1枚目から作ってください」と伝えます。
+5. できた画像を番号順に保存します。
+6. 講演では画像を全画面で順番に表示します。
+
+文字が崩れた場合は、「絵には文字を入れず、同じ番号のタイトルとキャプションを別に出してください」と修正します。`;
+        }
+        if(data.outputType === 'browser'){
+          return `【この後の使い方】
+1. 「HTML生成プロンプト」を自分の生成AIへ貼り付けます。
+2. 最終成果物としてindex.htmlファイルを作るよう確認します。
+3. ファイルを保存し、Chromeなどで開きます。
+4. 全画面表示と左右キーの動作を確認します。
+5. 会場ではネット接続がなくても開けるか事前に確認します。`;
+        }
+        if(data.outputType === 'outline'){
+          return `【この後の使い方】
+1. 構成確認プロンプトをAIへ貼り付けます。
+2. 出てきた構成を読み、「自分が話したいこと」ではなく「聞き手に必要か」で確認します。
+3. 不要なスライドを削り、足りない具体例だけを追加します。
+4. 構成が固まってから、紙芝居型または編集可能なスライドへ進みます。`;
+        }
+        if(data.outputType === 'notebook'){
+          return `【この後の使い方】
+1. NotebookLMへ、使用する公的資料や自分の資料をソースとして登録します。
+2. 個人情報を含む資料は登録しません。
+3. 指示書をソースまたは入力欄へ追加します。
+4. ソースにない事実が作られていないか、引用元を確認します。`;
+        }
+        return `【この後の使い方】
+1. スライド生成プロンプトを、自分が使用するChatGPT、Gemini等へ貼り付けます。
+2. 「画像だけではなく、一つの編集可能なスライド資料」と伝わっているか確認します。
+3. PowerPointがない場合は、Googleスライドまたはブラウザ用HTMLへの変更を依頼します。
+4. 生成後は、文字量、専門用語、事実、個人情報を確認します。`;
+      }
+
+      function render(data){
+        const slides = makeSlides(data);
+        $('#summaryOutput').textContent = makeSummary(data);
+        $('#slidesOutput').innerHTML = slides.map(s => `
+          <article class="slide-card">
+            <div class="slide-no">${s.n}</div>
+            <div>
+              <h4>${esc(s.title)}</h4>
+              <p><strong>伝えること：</strong>${esc(s.point)}</p>
+              <div class="caption-preview"><strong>画面の短い言葉：</strong>${esc(s.caption)}</div>
+              <p><strong>図・イラスト：</strong>${esc(s.visual)}</p>
+              <div class="speaker-note"><strong>話すメモ：</strong>${esc(s.note)}</div>
+            </div>
+          </article>`).join('');
+        $('#promptOutput').textContent = makePrompt(data, slides);
+        $('#notebookOutput').textContent = makeNotebook(data, slides);
+        $('#outputBadge').textContent = '完成形：' + outputTypeName(data.outputType);
+        const promptLabels = {
+          kamishibai:'紙芝居生成プロンプト',
+          editable:'スライド生成プロンプト',
+          browser:'HTML生成プロンプト',
+          outline:'構成確認プロンプト',
+          notebook:'NotebookLM用指示書'
+        };
+        $('#promptTabLabel').textContent = promptLabels[data.outputType] || 'AI用プロンプト';
+        $('#usageGuide').textContent = makeUsageGuide(data);
+        $('#downloadPrompt').dataset.filename =
+          data.outputType === 'kamishibai' ? '口福Labo_紙芝居生成プロンプト.txt' :
+          data.outputType === 'browser' ? '口福Labo_HTMLスライド生成プロンプト.txt' :
+          data.outputType === 'outline' ? '口福Labo_講演構成プロンプト.txt' :
+          '口福Labo_プレゼン作成プロンプト.txt';
+        builder.classList.add('hidden');
+        result.classList.add('show');
+        window.scrollTo({top: Math.max(0, result.offsetTop-20), behavior:'smooth'});
+      }
+
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const data = getData();
+        if(!data.theme || !data.audience || !data.message){
+          const missing = [];
+          if(!data.theme) missing.push('話したいテーマ');
+          if(!data.audience) missing.push('主な聞き手');
+          if(!data.message) missing.push('中心メッセージ');
+          toast('未入力：' + missing.join('・'));
+          const firstMissingStep = !data.theme ? 1 : (!data.audience ? 2 : 3);
+          showStep(firstMissingStep);
+          const targetId = !data.theme ? 'theme' : (!data.audience ? 'audience' : 'message');
+          setTimeout(() => $('#'+targetId)?.focus(), 350);
+          return;
+        }
+        save();
+        render(data);
+      });
+
+      $('#editBtn').addEventListener('click', () => {
+        result.classList.remove('show');
+        builder.classList.remove('hidden');
+        showStep(1);
+      });
+
+      $$('.tab').forEach(btn => btn.addEventListener('click', () => {
+        $$('.tab').forEach(x=>x.classList.remove('active'));
+        $$('.tab-panel').forEach(x=>x.classList.remove('active'));
+        btn.classList.add('active');
+        $('#tab-'+btn.dataset.tab).classList.add('active');
+      }));
+
+      $$('.copy-btn').forEach(btn => btn.addEventListener('click', async () => {
+        const text = $('#'+btn.dataset.copy).textContent;
+        try{
+          await navigator.clipboard.writeText(text);
+          toast('コピーしました');
+        }catch{
+          const ta = document.createElement('textarea');
+          ta.value = text; document.body.appendChild(ta); ta.select();
+          document.execCommand('copy'); ta.remove();
+          toast('コピーしました');
+        }
+      }));
+
+      $('#downloadPrompt').addEventListener('click', () => {
+        const text = $('#promptOutput').textContent;
+        const blob = new Blob([text], {type:'text/plain;charset=utf-8'});
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = $('#downloadPrompt').dataset.filename || '口福Labo_プレゼン作成プロンプト.txt';
+        a.click();
+        URL.revokeObjectURL(a.href);
+      });
+
+      $('#printBtn').addEventListener('click', () => window.print());
+
+      $('#resetBtn').addEventListener('click', () => {
+        if(!confirm('このブラウザに保存された入力内容を消去します。よろしいですか？')) return;
+        safeStorageRemove('koufuku_presentation_data');
+        safeStorageRemove('koufuku_presentation_mode');
+        form.reset();
+        setMode('light');
+        result.classList.remove('show');
+        builder.classList.remove('hidden');
+        showStep(1);
+        toast('入力を消去しました');
+      });
+
+      function safeStorageGet(key){
+        try{return localStorage.getItem(key)}catch{return null}
+      }
+      function safeStorageSet(key,value){
+        try{localStorage.setItem(key,value)}catch{}
+      }
+      function safeStorageRemove(key){
+        try{localStorage.removeItem(key)}catch{}
+      }
+
+      function save(){
+        const data = {};
+        fieldsToSave.forEach(id => data[id] = $('#'+id)?.value ?? '');
+        data.storyType = $('input[name="storyType"]:checked')?.value || 'beginner';
+        data.lightOutput = $('input[name="lightOutput"]:checked')?.value || 'kamishibai';
+        data.advancedOutput = $('input[name="advancedOutput"]:checked')?.value || 'editable';
+        data.extras = $$('.extra:checked').map(x=>x.value);
+        safeStorageSet('koufuku_presentation_data', JSON.stringify(data));
+      }
+
+      function restore(){
+        const savedMode = safeStorageGet('koufuku_presentation_mode');
+        if(savedMode) setMode(savedMode);
+        const raw = safeStorageGet('koufuku_presentation_data');
+        if(!raw) return;
+        try{
+          const data = JSON.parse(raw);
+          fieldsToSave.forEach(id => {
+            const el = $('#'+id);
+            if(el && data[id] !== undefined) el.value = data[id];
+          });
+          if(data.storyType){
+            const r = $(`input[name="storyType"][value="${data.storyType}"]`);
+            if(r) r.checked = true;
+          }
+          if(data.lightOutput){
+            const r = $(`input[name="lightOutput"][value="${data.lightOutput}"]`);
+            if(r) r.checked = true;
+          }
+          if(data.advancedOutput){
+            const r = $(`input[name="advancedOutput"][value="${data.advancedOutput}"]`);
+            if(r) r.checked = true;
+          }
+          $$('.extra').forEach(x => x.checked = (data.extras || []).includes(x.value));
+        }catch{}
+      }
+
+      fieldsToSave.forEach(id => {
+        const el = $('#'+id);
+        if(el) el.addEventListener('change', save);
+      });
+      $$('input[name="storyType"],input[name="lightOutput"],input[name="advancedOutput"],.extra')
+        .forEach(el => el.addEventListener('change', save));
+
+      let toastTimer;
+      function toast(message){
+        const el = $('#toast');
+        el.textContent = message;
+        el.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(()=>el.classList.remove('show'),1800);
+      }
+
+      restore();
+      showStep(1);
+    })();
+  </script>
+</body>
+</html>
